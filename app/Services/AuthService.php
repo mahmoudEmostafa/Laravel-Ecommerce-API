@@ -172,10 +172,10 @@ public function resendOtp($email)
         ];
     }
 
-    // حذف OTP القديم
+    
     Otp::where('email', $email)->delete();
 
-    // إنشاء OTP جديد
+    
     $otp = $this->generateOtp($email);
 
     Mail::to($email)->send(new SendOtpMail($otp));

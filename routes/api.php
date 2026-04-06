@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\User\CartController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -30,6 +32,42 @@ Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
 //test role 
-Route::get('/test-role', function () {
-    return auth()->user()->hasRole('admin');
+Route::get('/test-role', function (Request $request) {
+    return $request->user()->hasRole('admin');
 })->middleware('auth:sanctum');
+
+
+
+
+
+//product api
+
+Route::post('/products', [ProductController::class, 'store'])
+    ->middleware(['auth:sanctum', 'role:admin']);
+
+Route::put('/products/{id}', [ProductController::class, 'update'])
+    ->middleware(['auth:sanctum', 'role:admin']);
+
+Route::delete('/products/{id}', [ProductController::class, 'destroy'])
+    ->middleware(['auth:sanctum', 'role:admin']);
+
+Route::get('/products', [ProductController::class, 'index']);
+
+Route::get('/products/{slug}', [ProductController::class, 'show']);
+
+Route::post('/products/{product}/image', [ProductController::class, 'uploadImage'])
+    ->middleware(['auth:sanctum', 'role:admin']);
+
+//Cart api 
+
+Route::middleware('auth:sanctum')->group(function () {
+
+    Route::post('/cart/add', [CartController::class, 'add']);
+
+    Route::get('/cart', [CartController::class, 'index']);
+
+    Route::put('/cart/item/{id}', [CartController::class, 'update']);
+
+    Route::delete('/cart/item/{id}', [CartController::class, 'remove']);
+
+});
