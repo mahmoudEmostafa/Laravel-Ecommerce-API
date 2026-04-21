@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Spatie\Permission\Models\Role;
 
 class AuthService
 {
@@ -145,7 +146,13 @@ public function verifyOtp($data)
     $user = User::where('email',$data['email'])->first();
 
     $user->email_verified_at = now();
-    $user->assignRole('user');
+
+    $role = Role::firstOrCreate([
+        'name' => 'user',
+        'guard_name' => 'web',
+    ]);
+
+    $user->assignRole($role);
     $user->save();
 
     $otp->delete();

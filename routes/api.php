@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\User\CartController;
+use App\Http\Controllers\User\OrderController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -71,3 +73,30 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/cart/item/{id}', [CartController::class, 'remove']);
 
 });
+
+
+
+//Order api
+
+Route::post('/checkout', [OrderController::class, 'checkout'])
+    ->middleware('auth:sanctum');
+Route::get('/my-orders', [OrderController::class, 'myOrders'])
+    ->middleware('auth:sanctum');
+Route::get('/orders/{id}', [OrderController::class, 'show'])
+    ->middleware('auth:sanctum');
+
+//admin
+Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
+
+    Route::get('/admin/orders', [OrderController::class, 'adminOrders']);
+
+    Route::get('/admin/orders/{id}', [OrderController::class, 'adminShow']);
+
+    Route::put('/admin/orders/{id}/status', [OrderController::class, 'updateStatus']);
+
+});
+
+
+//payment
+Route::post('/checkout/{orderId}', [PaymentController::class, 'checkout'])
+    ->middleware('auth:sanctum');
